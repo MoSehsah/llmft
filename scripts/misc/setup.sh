@@ -1,6 +1,6 @@
 # setup basic paths
-export CACHE_BASE_DIR=$PROJECT_DIR/cache
-export OUTPUT_DIR=$PROJECT_DIR/logfiles
+export CACHE_BASE_DIR=/cache
+export OUTPUT_DIR=/logfiles
 
 # setup wandb
 export WANDB_DISABLED=false
