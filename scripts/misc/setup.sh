@@ -3,7 +3,7 @@ export CACHE_BASE_DIR=/cache
 export OUTPUT_DIR=/logfiles
 
 # setup wandb
-export WANDB_DISABLED=false
+export WANDB_DISABLED=true
 export WANDB_API_KEY=
 export WANDB_USERNAME=
 export WANDB_ENTITY=

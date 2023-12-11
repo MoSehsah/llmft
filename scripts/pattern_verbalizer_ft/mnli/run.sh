@@ -25,7 +25,7 @@ logging_steps=$((max_train_samples / (bsz * num_gpus)))
 
 for seed in "0"
 do
-    for data_seed in "0" "1" "2" "3" "4" "5" "6" "7" "8" "9"
+    for data_seed in "0"
     do
         deepspeed \
             --master_port $port \
