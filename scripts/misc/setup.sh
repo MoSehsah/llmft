@@ -1,7 +1,7 @@
 # setup basic paths
 export CACHE_BASE_DIR=/cache
 export OUTPUT_DIR=/logfiles
-
+export CUDA_VISIBLE_DEVICES=0
 # setup wandb
 export WANDB_DISABLED=true
 export WANDB_API_KEY=
