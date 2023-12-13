@@ -566,7 +566,7 @@ class FtTrainer(Trainer):
                     # AT THE VERY END!
                     _ = list(train_dataloader.sampler)
                     
-        losses_per_epoch = []
+        losses_per_epoch = np.zeros(10)
 
         for epoch in range(epochs_trained, num_train_epochs):
             num_steps_in_epoch = 0
@@ -639,6 +639,8 @@ class FtTrainer(Trainer):
                         (1 + self.state.global_step - self._globalstep_last_logged)
                 else:
                     tr_loss += tr_loss_step
+
+                losses_per_epoch[epoch] = tr_loss
 
                 self.current_flos += float(self.floating_point_ops(inputs))
 
@@ -729,8 +731,6 @@ class FtTrainer(Trainer):
                 args, self.state, self.control)
             self._maybe_log_save_evaluate(
                 tr_loss, model, trial, epoch, ignore_keys_for_eval)
-            
-            losses_per_epoch.append(tr_loss.item()/num_steps_in_epoch)
             
 
             if DebugOption.TPU_METRICS_DEBUG in self.args.debug:
