@@ -565,8 +565,11 @@ class FtTrainer(Trainer):
                     # Otherwise we need to call the whooooole sampler cause there is some random operation added
                     # AT THE VERY END!
                     _ = list(train_dataloader.sampler)
+                    
+        losses_per_epoch = np.zeros(10)
 
         for epoch in range(epochs_trained, num_train_epochs):
+            num_steps_in_epoch = 0
             if isinstance(train_dataloader, DataLoader) and isinstance(train_dataloader.sampler, DistributedSampler):
                 train_dataloader.sampler.set_epoch(epoch)
             elif hasattr(train_dataloader, "dataset") and isinstance(train_dataloader.dataset, IterableDatasetShard):
@@ -623,6 +626,8 @@ class FtTrainer(Trainer):
                         tr_loss_step = self.training_step(model, inputs)
                 else:
                     tr_loss_step = self.training_step(model, inputs)
+                    
+                num_steps_in_epoch += 1
 
                 if (
                     args.logging_nan_inf_filter
@@ -634,6 +639,8 @@ class FtTrainer(Trainer):
                         (1 + self.state.global_step - self._globalstep_last_logged)
                 else:
                     tr_loss += tr_loss_step
+
+                losses_per_epoch[epoch] = tr_loss
 
                 self.current_flos += float(self.floating_point_ops(inputs))
 
@@ -724,6 +731,7 @@ class FtTrainer(Trainer):
                 args, self.state, self.control)
             self._maybe_log_save_evaluate(
                 tr_loss, model, trial, epoch, ignore_keys_for_eval)
+            
 
             if DebugOption.TPU_METRICS_DEBUG in self.args.debug:
                 if is_torch_tpu_available():
@@ -736,6 +744,10 @@ class FtTrainer(Trainer):
                     )
             if self.control.should_training_stop:
                 break
+                
+        print(f"losses at each epoch: \n {losses_per_epoch}")
+        
+        
 
         if args.past_index and hasattr(self, "_past"):
             # Clean the state at the end of training
